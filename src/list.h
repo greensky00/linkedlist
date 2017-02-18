@@ -29,6 +29,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct list_elem {
     struct list_elem *prev;
     struct list_elem *next;
@@ -90,3 +94,6 @@ static inline int list_is_empty(struct list *list)
     return list->head == NULL;
 }
 
+#ifdef __cplusplus
+}
+#endif
