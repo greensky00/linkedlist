@@ -1,10 +1,11 @@
-LDFLAGS = 
+LDFLAGS =
 CFLAGS = \
 	-g -D_GNU_SOURCE \
 	-I. -I./src \
 
 CFLAGS += -Wall
-CFLAGS += -O3 
+CFLAGS += -O3
+CXXFLAGS = $(CFLAGS)
 
 LIST_SRC = src/list.o
 
@@ -17,6 +18,6 @@ PROGRAMS = \
 all: $(PROGRAMS)
 
 list_test: $(TEST)
-	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 clean:
 	rm -rf $(PROGRAMS) ./*.o ./*.so ./*/*.o ./*/*.so
