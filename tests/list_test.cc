@@ -56,7 +56,7 @@ int push_front_test()
 
     {
         int arr_expected[] = {40, 30, 20, 10, 0};
-        list_validation(&int_list, arr_expected, 5);
+        CHK_Z(list_validation(&int_list, arr_expected, 5));
     }
 
     destroy_int_list(&int_list);
@@ -80,7 +80,7 @@ int push_back_test()
 
     {
         int arr_expected[] = {0, 10, 20, 30, 40};
-        list_validation(&int_list, arr_expected, 5);
+        CHK_Z(list_validation(&int_list, arr_expected, 5));
     }
 
     destroy_int_list(&int_list);
@@ -115,7 +115,7 @@ int insert_before_test()
 
     {
         int arr_expected[] = {45, 40, 35, 30, 25, 20, 15, 10, 5, 0};
-        list_validation(&int_list, arr_expected, 10);
+        CHK_Z(list_validation(&int_list, arr_expected, 10));
     }
 
     destroy_int_list(&int_list);
@@ -150,7 +150,7 @@ int insert_after_test()
 
     {
         int arr_expected[] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
-        list_validation(&int_list, arr_expected, 10);
+        CHK_Z(list_validation(&int_list, arr_expected, 10));
     }
 
     destroy_int_list(&int_list);
