@@ -8,7 +8,7 @@
 #include <assert.h>
 
 typedef struct {
-    struct list_elem elm;
+    struct list_elem le;
     int value;
 } int_node;
 
@@ -17,7 +17,7 @@ int destroy_int_list(struct list *int_list)
     int_node *node = NULL;
     struct list_elem *cursor = list_begin(int_list);
     while (cursor) {
-        node = _get_entry(cursor, int_node, elm);
+        node = _get_entry(cursor, int_node, le);
         cursor = list_remove(int_list, cursor);
         free(node);
     }
@@ -30,12 +30,13 @@ int list_validation(struct list *int_list, int *arr, size_t arr_size)
     int_node *node = NULL;
     struct list_elem *cursor = list_begin(int_list);
     while (cursor) {
-        node = _get_entry(cursor, int_node, elm);
+        node = _get_entry(cursor, int_node, le);
         CHK_SM(count, arr_size);
         CHK_EQ(arr[count++], node->value);
         cursor = list_next(cursor);
     }
     CHK_EQ(arr_size, count);
+    CHK_EQ(arr_size, list_size(int_list));
     return 0;
 }
 
@@ -50,8 +51,9 @@ int push_front_test()
 
     for (i=0; i<n; ++i) {
         node = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node->le);
         node->value = i * 10;
-        list_push_front(&int_list, &node->elm);
+        list_push_front(&int_list, &node->le);
     }
 
     {
@@ -66,7 +68,7 @@ int push_front_test()
 int push_back_test()
 {
     int i;
-    int n=5;
+    int n = 5;
     struct list int_list;
     int_node *node;
 
@@ -74,8 +76,9 @@ int push_back_test()
 
     for (i=0; i<n; ++i) {
         node = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node->le);
         node->value = i * 10;
-        list_push_back(&int_list, &node->elm);
+        list_push_back(&int_list, &node->le);
     }
 
     {
@@ -90,7 +93,7 @@ int push_back_test()
 int insert_before_test()
 {
     int i;
-    int n=5;
+    int n = 5;
     struct list int_list;
     int_node *node;
 
@@ -98,19 +101,21 @@ int insert_before_test()
 
     for (i=0; i<n; ++i) {
         node = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node->le);
         node->value = i * 10;
-        list_push_front(&int_list, &node->elm);
+        list_push_front(&int_list, &node->le);
     }
 
     int_node *node_new;
     struct list_elem *cursor = list_begin(&int_list);
     while (cursor) {
-        node = _get_entry(cursor, int_node, elm);
+        node = _get_entry(cursor, int_node, le);
         cursor = list_next(cursor);
 
         node_new = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node_new->le);
         node_new->value = node->value + 5;
-        list_insert_before(&int_list, &node->elm, &node_new->elm);
+        list_insert_before(&int_list, &node->le, &node_new->le);
     }
 
     {
@@ -125,7 +130,7 @@ int insert_before_test()
 int insert_after_test()
 {
     int i;
-    int n=5;
+    int n = 5;
     struct list int_list;
     int_node *node;
 
@@ -133,19 +138,21 @@ int insert_after_test()
 
     for (i=0; i<n; ++i) {
         node = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node->le);
         node->value = i * 10;
-        list_push_back(&int_list, &node->elm);
+        list_push_back(&int_list, &node->le);
     }
 
     int_node *node_new;
     struct list_elem *cursor = list_end(&int_list);
     while (cursor) {
-        node = _get_entry(cursor, int_node, elm);
+        node = _get_entry(cursor, int_node, le);
         cursor = list_prev(cursor);
 
         node_new = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node_new->le);
         node_new->value = node->value + 5;
-        list_insert_after(&int_list, &node->elm, &node_new->elm);
+        list_insert_after(&int_list, &node->le, &node_new->le);
     }
 
     {
@@ -160,7 +167,7 @@ int insert_after_test()
 int pop_front_test()
 {
     int i;
-    int n=5;
+    int n = 5;
     struct list int_list;
     int_node *node;
 
@@ -168,16 +175,18 @@ int pop_front_test()
 
     for (i=0; i<n; ++i) {
         node = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node->le);
         node->value = i * 10;
-        list_push_back(&int_list, &node->elm);
+        list_push_back(&int_list, &node->le);
     }
 
     struct list_elem *cursor;
     for (i=0; i<n; ++i) {
         cursor = list_pop_front(&int_list);
         CHK_OK(cursor);
-        node = _get_entry(cursor, int_node, elm);
+        node = _get_entry(cursor, int_node, le);
         CHK_EQ(i * 10, node->value);
+        free(node);
     }
     CHK_OK(list_is_empty(&int_list));
 
@@ -188,7 +197,7 @@ int pop_front_test()
 int pop_back_test()
 {
     int i;
-    int n=5;
+    int n = 5;
     struct list int_list;
     int_node *node;
 
@@ -196,16 +205,18 @@ int pop_back_test()
 
     for (i=0; i<n; ++i) {
         node = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node->le);
         node->value = i * 10;
-        list_push_front(&int_list, &node->elm);
+        list_push_front(&int_list, &node->le);
     }
 
     struct list_elem *cursor;
     for (i=0; i<n; ++i) {
         cursor = list_pop_back(&int_list);
         CHK_OK(cursor);
-        node = _get_entry(cursor, int_node, elm);
+        node = _get_entry(cursor, int_node, le);
         CHK_EQ(i * 10, node->value);
+        free(node);
     }
     CHK_OK(list_is_empty(&int_list));
 
@@ -216,7 +227,7 @@ int pop_back_test()
 int remove_reverse_test()
 {
     int i;
-    int n=5;
+    int n = 5;
     struct list int_list;
     int_node *node;
 
@@ -224,14 +235,16 @@ int remove_reverse_test()
 
     for (i=0; i<n; ++i) {
         node = (int_node*)malloc(sizeof(int_node));
+        list_elem_init(&node->le);
         node->value = i * 10;
-        list_push_front(&int_list, &node->elm);
+        list_push_front(&int_list, &node->le);
     }
 
     struct list_elem *cursor = list_end(&int_list);
     while (cursor) {
-        node = _get_entry(cursor, int_node, elm);
+        node = _get_entry(cursor, int_node, le);
         cursor = list_remove_reverse(&int_list, cursor);
+        free(node);
     }
     CHK_OK(list_is_empty(&int_list));
 

@@ -5,7 +5,7 @@
  * https://github.com/greensky00
  *
  * Doubly Linked List
- * Version: 0.1.1
+ * Version: 0.1.2
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,7 +31,7 @@
 
 #include "list.h"
 
-void list_push_front(struct list *list, struct list_elem *e)
+void list_push_front(struct list* list, struct list_elem* e)
 {
     if (list->head == NULL) {
         list->head = e;
@@ -43,9 +43,10 @@ void list_push_front(struct list *list, struct list_elem *e)
         e->next = list->head;
         list->head = e;
     }
+    list->num_nodes++;
 }
 
-void list_push_back(struct list *list, struct list_elem *e)
+void list_push_back(struct list* list, struct list_elem* e)
 {
     if (list->tail == NULL) {
         list->head = e;
@@ -57,9 +58,12 @@ void list_push_back(struct list *list, struct list_elem *e)
         e->next = NULL;
         list->tail = e;
     }
+    list->num_nodes++;
 }
 
-void list_insert_before(struct list *list, struct list_elem *pivot, struct list_elem *e)
+void list_insert_before(struct list* list,
+                        struct list_elem* pivot,
+                        struct list_elem* e)
 {
     e->prev = pivot->prev;
     e->next = pivot;
@@ -69,9 +73,13 @@ void list_insert_before(struct list *list, struct list_elem *pivot, struct list_
         list->head = e;
     }
     pivot->prev = e;
+
+    list->num_nodes++;
 }
 
-void list_insert_after(struct list *list, struct list_elem *pivot, struct list_elem *e)
+void list_insert_after(struct list* list,
+                       struct list_elem* pivot,
+                       struct list_elem* e)
 {
     e->next = pivot->next;
     e->prev = pivot;
@@ -81,9 +89,12 @@ void list_insert_after(struct list *list, struct list_elem *pivot, struct list_e
         list->tail = e;
     }
     pivot->next = e;
+
+    list->num_nodes++;
 }
 
-struct list_elem *list_remove(struct list *list, struct list_elem *e)
+struct list_elem* list_remove(struct list* list,
+                              struct list_elem* e)
 {
     if (e) {
         if (e->next) e->next->prev = e->prev;
@@ -92,12 +103,14 @@ struct list_elem *list_remove(struct list *list, struct list_elem *e)
         if (list->head == e) list->head = e->next;
         if (list->tail == e) list->tail = e->prev;
 
+        list->num_nodes--;
         return e->next;
     }
     return NULL;
 }
 
-struct list_elem *list_remove_reverse(struct list *list, struct list_elem *e)
+struct list_elem* list_remove_reverse(struct list* list,
+                                      struct list_elem* e)
 {
     if (e) {
         if (e->next) e->next->prev = e->prev;
@@ -106,12 +119,13 @@ struct list_elem *list_remove_reverse(struct list *list, struct list_elem *e)
         if (list->head == e) list->head = e->next;
         if (list->tail == e) list->tail = e->prev;
 
+        list->num_nodes--;
         return e->prev;
     }
     return NULL;
 }
 
-struct list_elem *list_pop_front(struct list *list)
+struct list_elem* list_pop_front(struct list* list)
 {
     struct list_elem *e = list->head;
     if (e) {
@@ -121,14 +135,15 @@ struct list_elem *list_pop_front(struct list *list)
         if (list->head == e) list->head = e->next;
         if (list->tail == e) list->tail = e->prev;
 
+        list->num_nodes--;
         return e;
     }
     return NULL;
 }
 
-struct list_elem *list_pop_back(struct list *list)
+struct list_elem* list_pop_back(struct list* list)
 {
-    struct list_elem *e = list->tail;
+    struct list_elem* e = list->tail;
     if (e) {
         if (e->next) e->next->prev = e->prev;
         if (e->prev) e->prev->next = e->next;
@@ -136,6 +151,7 @@ struct list_elem *list_pop_back(struct list *list)
         if (list->head == e) list->head = e->next;
         if (list->tail == e) list->tail = e->prev;
 
+        list->num_nodes--;
         return e;
     }
     return NULL;

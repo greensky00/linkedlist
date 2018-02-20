@@ -5,7 +5,7 @@
  * https://github.com/greensky00
  *
  * Doubly Linked List
- * Version: 0.1.1
+ * Version: 0.1.2
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,21 +31,22 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 struct list_elem {
-    struct list_elem *prev;
-    struct list_elem *next;
+    struct list_elem* prev;
+    struct list_elem* next;
 };
 
 struct list {
-    struct list_elem *head;
-    struct list_elem *tail;
+    struct list_elem* head;
+    struct list_elem* tail;
+    uint32_t num_nodes;
 };
 
 #ifndef _get_entry
@@ -53,48 +54,72 @@ struct list {
     ((STRUCT *) ((uint8_t *) (ELEM) - offsetof (STRUCT, MEMBER)))
 #endif
 
-static inline void list_init(struct list *list)
+static inline void list_init(struct list* list)
 {
     list->head = NULL;
     list->tail = NULL;
+    list->num_nodes = 0;
 }
 
-void list_push_front(struct list *list, struct list_elem *e);
-void list_push_back(struct list *list, struct list_elem *e);
+static inline void list_elem_init(struct list_elem* le)
+{
+    le->prev = NULL;
+    le->next = NULL;
+}
 
-// insert 'e' before 'pivot'
-void list_insert_before(struct list *list, struct list_elem *pivot, struct list_elem *e);
+static inline size_t list_size(struct list* list) {
+    return list->num_nodes;
+}
 
-// insert 'e' after 'pivot'
-void list_insert_after(struct list *list, struct list_elem *pivot, struct list_elem *e);
+// Insert `e` at the head of `list`.
+void list_push_front(struct list* list, struct list_elem* e);
 
-struct list_elem *list_remove(struct list *list, struct list_elem *e);
-struct list_elem *list_remove_reverse(struct list *list, struct list_elem *e);
+// Insert `e` at the tail of `list`.
+void list_push_back(struct list* list, struct list_elem* e);
 
-struct list_elem *list_pop_front(struct list *list);
-struct list_elem *list_pop_back(struct list *list);
+// Insert `e` before `pivot`.
+void list_insert_before(struct list* list,
+                        struct list_elem* pivot,
+                        struct list_elem* e);
 
-static inline struct list_elem *list_begin(struct list *list)
+// Insert `e` after `pivot`.
+void list_insert_after(struct list* list,
+                       struct list_elem* pivot,
+                       struct list_elem* e);
+
+// Remove `e`, and return its next.
+struct list_elem* list_remove(struct list* list, struct list_elem* e);
+
+// Remove `e`, and return its prev.
+struct list_elem* list_remove_reverse(struct list* list, struct list_elem* e);
+
+// Remove the head of `list`, and then return it.
+struct list_elem* list_pop_front(struct list* list);
+
+// Remove the tail of `list`, and then return it.
+struct list_elem* list_pop_back(struct list* list);
+
+static inline struct list_elem* list_begin(struct list* list)
 {
     return list->head;
 }
 
-static inline struct list_elem *list_end(struct list *list)
+static inline struct list_elem* list_end(struct list* list)
 {
     return list->tail;
 }
 
-static inline struct list_elem *list_next(struct list_elem *e)
+static inline struct list_elem* list_next(struct list_elem* e)
 {
     return e->next;
 }
 
-static inline struct list_elem *list_prev(struct list_elem *e)
+static inline struct list_elem* list_prev(struct list_elem* e)
 {
     return e->prev;
 }
 
-static inline int list_is_empty(struct list *list)
+static inline int list_is_empty(struct list* list)
 {
     return list->head == NULL;
 }
